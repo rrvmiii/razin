@@ -42,7 +42,7 @@ const TG_CHAT_ID = '8718861520';
 // ⚠️ حط بياناتك هنا:
 const GITHUB_USERNAME = 'rrvmiii';
 const GITHUB_REPO = 'razin';
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = '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';
 
 let reviewsSha = null;
 let ordersSha = null;
