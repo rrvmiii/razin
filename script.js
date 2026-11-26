@@ -38,14 +38,46 @@ const DISCOUNT = 0.10;
 const TG_BOT_TOKEN = '8865297993:AAGDi9rGxNHkWvOjUSWjNQZ59WvIk4fRky0';
 const TG_CHAT_ID = '8718861520';
 
-/* ================= GitHub Config ================= */
-// ⚠️ حط بياناتك هنا:
+/* ================= JSONBin Config (للتقييمات) ================= */
+const JSONBIN_ID = '6b07e095ab3a7b614481ed8a';
+const JSONBIN_KEY = '$2a$10$0hceB/Cc/PFQxTRk0bzcme6ZCFBPL4.3NFHhU2VdxBPLaeimyDjvG';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+async function getReviewsFromBin() {
+  try {
+    const res = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Access-Key': JSONBIN_KEY }
+    });
+    if (!res.ok) throw new Error('Fetch failed');
+    const data = await res.json();
+    return data.record || {};
+  } catch (e) {
+    console.error('Error fetching reviews:', e);
+    return {};
+  }
+}
+
+async function saveReviewsToBin(data) {
+  try {
+    const res = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Access-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(data)
+    });
+    return res.ok;
+  } catch (e) {
+    console.error('Error saving reviews:', e);
+    return false;
+  }
+}
+
+/* ================= GitHub Config (للطلبات فقط) ================= */
 const GITHUB_USERNAME = 'rrvmiii';
 const GITHUB_REPO = 'razin';
-const GITHUB_TOKEN = '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';
-
-let reviewsSha = null;
-let ordersSha = null;
+const GITHUB_TOKEN = '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';
 
 async function getGitHubFile(filename) {
   try {
@@ -54,7 +86,6 @@ async function getGitHubFile(filename) {
     });
     if (!res.ok) throw new Error('File not found');
     const data = await res.json();
-    // تعديل الترميز لقراءة اللغة العربية بشكل صحيح
     const contentString = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
     const content = JSON.parse(contentString);
     return { content, sha: data.sha };
@@ -64,7 +95,6 @@ async function getGitHubFile(filename) {
 }
 
 async function saveGitHubFile(filename, data, sha) {
-  // تعديل الترميز لحفظ اللغة العربية بشكل صحيح
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
   const body = { message: `Update ${filename}`, content };
   if (sha) body.sha = sha;
@@ -101,13 +131,14 @@ function escapeHtml(str){
     .replace(/'/g, '&#39;');
 }
 
-/* ================= Reviews Persistence ================= */
+/* ================= Reviews Persistence (JSONBin) ================= */
 let productReviews = {};
 
 async function loadReviews() {
-  const data = await getGitHubFile('reviews.json');
-  productReviews = data.content;
-  reviewsSha = data.sha;
+  productReviews = await getReviewsFromBin();
+  if (!productReviews || typeof productReviews !== 'object') {
+      productReviews = {};
+  }
 }
 
 async function submitReview(productId) {
@@ -131,10 +162,9 @@ async function submitReview(productId) {
   });
 
   toast('جاري حفظ التقييم...');
-  const newSha = await saveGitHubFile('reviews.json', productReviews, reviewsSha);
+  const success = await saveReviewsToBin(productReviews);
   
-  if (newSha) {
-    reviewsSha = newSha;
+  if (success) {
     toast('تم إضافة تقييمك بنجاح!');
     showProduct(productId);
   } else {
@@ -554,7 +584,7 @@ ${orderDetails}
       throw new Error('Telegram API Error');
     }
 
-    // حفظ الطلب في orders.json
+    // حفظ الطلب في orders.json (على جيت هاب)
     const orderData = {
       name, contact, payMethod: pay.value, 
       items: cart.map(x => ({ title: x.title, qty: x.qty, price: x.price })),
@@ -611,7 +641,8 @@ document.addEventListener('keydown', e=>{ if (e.key === 'Escape') closeDrawer();
 /* ================= Init ================= */
 renderProducts();
 updateCart();
-loadReviews(); // تحميل التقييمات من GitHub عند فتح الموقع
+loadReviews(); // تحميل التقييمات من JSONBin عند فتح الموقع
+
 /* ================= Hash Router ================= */
 window.addEventListener('hashchange', handleRouting);
 window.addEventListener('DOMContentLoaded', handleRouting);
