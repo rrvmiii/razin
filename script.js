@@ -19,7 +19,6 @@ const PRODUCTS = [
   { id:'gm-1',  cat:'google',  title:'إيميل جوجل — حساب جديد',       desc:'حساب جوجل نظيف وجاهز للاستخدام مباشرة.', price:3,  tag:'شائع', image:'images/gmail.jpg', features:['متاح به تجربه مجانيه', 'ضمان 10 لـ 15 يوم', 'التسليم فوري بعد إتمام الطلب مباشرة'] },
   { id:'gm-5',  cat:'google',  title:'إيميلات جوجل — 10 حسابات',      desc:'حسابات جوجل نظيفه وجاهزه للاستخدام مباشرة ، وبسعر مميز.', price:30,  tag:'الأكثر طلبًا', image:'images/gmail.jpg', features:['متاح بهم تجربه مجانيه', 'ضمان 10 لـ 15 يوم', 'التسليم فوري بعد إتمام الطلب مباشرة'] },
   { id:'ap-1',  cat:'instagram',    title:'قريبا',                   desc:'قريبا', price:22,  tag:'', image:'https://placehold.co/600x600/f4efe8/3a111a?text=Soon', features:['قريبا'] },
-  { id:'ap-3',  cat:'instagram',    title:'قريبا',                   desc:'قريبا', price:58,  tag:'توفير', image:'https://placehold.co/600x600/f4efe8/3a111a?text=Soon', features:['قريبا'] },
   { id:'ot-1',  cat:'other',   title:'خدمة رقمية حسب الطلب',         desc:'عايز حاجة معينة؟ اطلبها وفريقنا يجهزها لك.', price:35,  tag:'', image:'https://placehold.co/600x600/f4efe8/3a111a?text=Soon', features:['تنفيذ حسب طلبك', 'جودة عالية', 'دعم مستمر'] }
 ];
 
